@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BarberApp — Premium Presentation</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --gold: #c9a84c;
+            --gold-light: #e2c97a;
+            --dark: #0a0a0a;
+            --card: #151515;
+            --text: #ffffff;
+            --muted: #a0a0a0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        body {
+            background-color: var(--dark);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+
+        .gold-gradient {
+            background: linear-gradient(135deg, var(--gold) 0%, var(--gold-light) 50%, var(--gold) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        /* Hero Section */
+        section {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 2rem;
+            position: relative;
+            scroll-snap-align: start;
+        }
+
+        .container {
+            max-width: 1200px;
+            width: 100%;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: clamp(3rem, 10vw, 6rem);
+            font-weight: 900;
+            letter-spacing: -3px;
+            line-height: 1;
+            margin-bottom: 1rem;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 1s ease-out;
+        }
+
+        .subtitle {
+            font-size: 1.5rem;
+            color: var(--muted);
+            margin-bottom: 3rem;
+            opacity: 0;
+            transition: all 1s ease-out 0.3s;
+        }
+
+        /* Features Grid */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            width: 100%;
+            margin-top: 2rem;
+        }
+
+        .feature-card {
+            background: var(--card);
+            border: 1px solid rgba(201, 168, 76, 0.1);
+            padding: 3rem 2rem;
+            border-radius: 2rem;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transform: scale(0.9);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: var(--gold);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5), 0 0 20px rgba(201,168,76,0.1);
+        }
+
+        .feature-card h3 {
+            color: var(--gold);
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .feature-card p {
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .icon-box {
+            width: 60px;
+            height: 60px;
+            background: rgba(201, 168, 76, 0.1);
+            border-radius: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            color: var(--gold);
+            font-size: 1.5rem;
+        }
+
+        /* Interactive Elements */
+        .visible h1, .visible .subtitle, .visible .feature-card {
+            opacity: 1 !important;
+            transform: none !important;
+        }
+
+        .step-indicator {
+            position: fixed;
+            right: 2rem;
+            top: 50%;
+            transform: translateY(-50%);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            z-index: 100;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .dot.active {
+            background: var(--gold);
+            transform: scale(1.5);
+            box-shadow: 0 0 10px var(--gold);
+        }
+
+        /* Dynamic Background */
+        .bg-glow {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(201, 168, 76, 0.05) 0%, transparent 70%);
+            top: -200px;
+            right: -200px;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .footer {
+            margin-top: 4rem;
+            padding: 2rem;
+            border-top: 1px solid rgba(255,255,255,0.05);
+            width: 100%;
+            color: var(--muted);
+            font-size: 0.9rem;
+        }
+
+        @media (max-width: 768px) {
+            h1 { font-size: 3rem; }
+            .subtitle { font-size: 1.1rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-glow"></div>
+    <div class="bg-glow" style="bottom: -200px; left: -200px; top: auto; right: auto;"></div>
+
+    <div class="step-indicator">
+        <div class="dot active" data-target="hero"></div>
+        <div class="dot" data-target="security"></div>
+        <div class="dot" data-target="metrics"></div>
+        <div class="dot" data-target="infra"></div>
+        <div class="dot" data-target="operations"></div>
+    </div>
+
+    <section id="hero" class="visible">
+        <div class="container">
+            <h1 class="gold-gradient">BARBERAPP</h1>
+            <p class="subtitle">La Plataforma Premium de Gestión que tu Negocio Merece</p>
+            <div style="margin-top: 2rem; color: var(--gold); font-weight: 600; letter-spacing: 2px; text-transform: uppercase; font-size: 0.8rem;">
+                Scrollea para descubrir el poder →
+            </div>
+        </div>
+    </section>
+
+    <section id="security">
+        <div class="container">
+            <h1 class="gold-gradient">SEGURIDAD TOTAL</h1>
+            <p class="subtitle">Protección de grado empresarial para cada usuario</p>
+            
+            <div class="features-grid">
+                <div class="feature-card" style="transition-delay: 0.1s;">
+                    <div class="icon-box">🛡️</div>
+                    <h3>Candado de Seguridad</h3>
+                    <p>Las nuevas barberías nacen en modo "Espera". Solo tú decides quién entra a la red tras una revisión manual.</p>
+                </div>
+                <div class="feature-card" style="transition-delay: 0.3s;">
+                    <div class="icon-box">🔐</div>
+                    <h3>Multi-Rol RBAC</h3>
+                    <p>Roles granulares para SuperAdmin, Administradores de Local, Barberos y Clientes finales.</p>
+                </div>
+                <div class="feature-card" style="transition-delay: 0.5s;">
+                    <div class="icon-box">🔁</div>
+                    <h3>Reset Administrativo</h3>
+                    <p>Recuperación de cuentas instantánea gestionada directamente desde el panel de control.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="metrics">
+        <div class="container">
+            <h1 class="gold-gradient">METRICAS PRO</h1>
+            <p class="subtitle">Decisiones basadas en datos, no en suposiciones</p>
+            
+            <div class="features-grid">
+                <div class="feature-card" style="transition-delay: 0.1s;">
+                    <div class="icon-box">📊</div>
+                    <h3>Ventas por Hora</h3>
+                    <p>Identifica tus "Horas Pico" para optimizar la cantidad de barberos en turno.</p>
+                </div>
+                <div class="feature-card" style="transition-delay: 0.3s;">
+                    <div class="icon-box">👤</div>
+                    <h3>Filtro por Barbero</h3>
+                    <p>Mide el rendimiento individual de cada miembro de tu equipo con precisión quirúrgica.</p>
+                </div>
+                <div class="feature-card" style="transition-delay: 0.5s;">
+                    <div class="icon-box">💰</div>
+                    <h3>Ticket Promedio</h3>
+                    <p>Conoce cuánto gasta cada cliente y crea estrategias para aumentar tus ingresos.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="infra">
+        <div class="container">
+            <h1 class="gold-gradient">INFRAESTRUCTURA CLOUD</h1>
+            <p class="subtitle">Disponibilidad 24/7 en IP: 34.172.114.2</p>
+            
+            <div class="features-grid">
+                <div class="feature-card" style="transition-delay: 0.1s;">
+                    <div class="icon-box">☁️</div>
+                    <h3>Google Cloud Platform</h3>
+                    <p>Alojamiento en servidores de clase mundial (GCP) bajo el programa Always Free, garantizando costos operativos de $0.</p>
+                </div>
+                <div class="feature-card" style="transition-delay: 0.3s;">
+                    <div class="icon-box">🐳</div>
+                    <h3>Docker Containerization</h3>
+                    <p>Implementación mediante contenedores que aseguran que la app corra con la misma fluidez en el servidor que en desarrollo.</p>
+                </div>
+                <div class="feature-card" style="transition-delay: 0.5s;">
+                    <div class="icon-box">🔋</div>
+                    <h3>Always On Ecosystem</h3>
+                    <p>Tu negocio nunca cierra. Acceso instantáneo para clientes y barberos desde cualquier parte del mundo, todo el tiempo.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="operations">
+        <div class="container">
+            <h1 class="gold-gradient">OPERACIÓN 360°</h1>
+            <p class="subtitle">Agilidad en cada paso del servicio</p>
+            
+            <div class="features-grid">
+                <div class="feature-card" style="transition-delay: 0.1s;">
+                    <div class="icon-box">📅</div>
+                    <h3>Agenda Inteligente</h3>
+                    <p>Slots dinámicos que se adaptan a la disponibilidad real de cada barbero.</p>
+                </div>
+                <div class="feature-card" style="transition-delay: 0.3s;">
+                    <div class="icon-box">✨</div>
+                    <h3>Finalización Rápida</h3>
+                    <p>Un solo click para cerrar el corte y actualizar las estadísticas globales del negocio.</p>
+                </div>
+                <div class="feature-card" style="transition-delay: 0.5s;">
+                    <div class="icon-box">📱</div>
+                    <h3>PWA & QR</h3>
+                    <p>Instala la app en tu móvil y permite que tus clientes reserven en segundos escaneando un código.</p>
+                </div>
+            </div>
+
+            <div class="footer">
+                &copy; 2026 BarberApp Premium Ecosystem — Desarrollado por Antigravity
+            </div>
+        </div>
+    </section>
+
+    <script>
+        const observerOptions = {
+            threshold: 0.5
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    updateDots(entry.target.id);
+                }
+            });
+        }, observerOptions);
+
+        document.querySelectorAll('section').forEach(section => {
+            observer.observe(section);
+        });
+
+        function updateDots(targetId) {
+            document.querySelectorAll('.dot').forEach(dot => {
+                dot.classList.toggle('active', dot.dataset.target === targetId);
+            });
+        }
+
+        document.querySelectorAll('.dot').forEach(dot => {
+            dot.addEventListener('click', () => {
+                document.getElementById(dot.dataset.target).scrollIntoView({
+                    behavior: 'smooth'
+                });
+            });
+        });
+
+        // Parallax effect on cards
+        document.addEventListener('mousemove', (e) => {
+            const cards = document.querySelectorAll('.feature-card');
+            const x = e.clientX / window.innerWidth;
+            const y = e.clientY / window.innerHeight;
+
+            cards.forEach(card => {
+                const rect = card.getBoundingClientRect();
+                if (rect.top < window.innerHeight && rect.bottom > 0) {
+                    const moveX = (x - 0.5) * 20;
+                    const moveY = (y - 0.5) * 20;
+                    card.style.transform = `translate(${moveX}px, ${moveY}px)`;
+                }
+            });
+        });
+    </script>
+</body>
+</html>

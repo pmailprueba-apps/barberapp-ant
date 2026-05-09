@@ -1,0 +1,140 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Funciones auxiliares
+    function isAuthenticated() {
+      return request.auth != null;
+    }
+    function isSuperAdmin() {
+      return request.auth.token.role == "superadmin";
+    }
+    function isAdminOf(barberiaId) {
+      return request.auth.token.role == "admin"
+        && request.auth.token.barberia_id == barberiaId;
+    }
+    function isBarberoOf(barberiaId) {
+      return request.auth.token.role == "barbero"
+        && request.auth.token.barberia_id == barberiaId;
+    }
+    function belongsTo(barberiaId) {
+      return request.auth.token.barberia_id == barberiaId;
+    }
+
+    // Barberías
+    match /barberias/{barberiaId} {
+      allow read: if true; 
+      
+      // Permitir CREAR si estás autenticado (se crea como 'pendiente' por código)
+      allow create: if isAuthenticated();
+      
+      // Permitir ACTUALIZAR si eres Admin, pero NO puedes tocar el 'estado' ni el 'plan'
+      allow update: if isSuperAdmin() || (
+        isAdminOf(barberiaId) && 
+        !request.resource.data.diff(resource.data).affectedKeys().hasAny(['estado', 'plan', 'acceso_admin'])
+      );
+      
+      allow delete: if isSuperAdmin();
+    }
+
+    // Servicios activos
+    match /barberias/{barberiaId}/servicios_activos/{servicioId} {
+      allow read: if true;
+      allow write: if isSuperAdmin() || isAdminOf(barberiaId);
+    }
+
+    // Citas
+    match /barberias/{barberiaId}/citas/{citaId} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated();
+      allow update: if isSuperAdmin()
+        || isAdminOf(barberiaId)
+        || isBarberoOf(barberiaId)
+        || (isAuthenticated() && request.auth.uid == resource.data.cliente_id);
+      allow delete: if isSuperAdmin() || isAdminOf(barberiaId);
+    }
+
+    // Usuarios
+    match /usuarios/{uid} {
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && request.auth.uid == uid;
+      allow update: if isSuperAdmin() 
+        || request.auth.uid == uid 
+        || (isAuthenticated() && request.auth.token.role == "admin" && resource.data.barberia_id == request.auth.token.barberia_id);
+      allow delete: if isSuperAdmin();
+    }
+
+    // Empleados
+    match /empleados/{uid} {
+      // Permitir lectura a cualquier autenticado para poder buscar contactos en el chat
+      allow read: if isAuthenticated();
+      allow create: if isAuthenticated() && request.auth.uid == uid;
+      allow update: if isSuperAdmin() || request.auth.uid == uid;
+      allow delete: if isSuperAdmin();
+    }
+
+    // Chats y Mensajería
+    match /chats/{chatId} {
+      // Función interna para verificar si el usuario es participante
+      // Basado en la convención de chatId: uid1_uid2 (ordenados alfabéticamente)
+      function isChatParticipant() {
+        return isAuthenticated() && (
+          chatId.startsWith(request.auth.uid + "_") || 
+          chatId.endsWith("_" + request.auth.uid) ||
+          (resource != null && request.auth.uid in resource.data.get('participants', []))
+        );
+      }
+
+      // Permitir lectura si el usuario es participante o superadmin
+      allow read: if isAuthenticated() && (
+        isSuperAdmin() || isChatParticipant()
+      );
+
+      // Permitir creación si el usuario se incluye como participante o es superadmin
+      allow create: if isAuthenticated() && (
+        isSuperAdmin() || 
+        chatId.startsWith(request.auth.uid + "_") || 
+        chatId.endsWith("_" + request.auth.uid) ||
+        (request.resource.data.get('participants', []).hasAny([request.auth.uid]))
+      );
+
+      // Permitir actualización (ej. último mensaje) si es participante o superadmin
+      allow update: if isAuthenticated() && (
+        isSuperAdmin() || isChatParticipant()
+      );
+
+      // Mensajes individuales dentro de un chat
+      match /messages/{messageId} {
+        // Para mensajes, confiamos en la convención del ID del chat (uid1_uid2)
+        // o en la existencia del documento padre con los participantes
+        allow read: if isAuthenticated() && (
+          isSuperAdmin() ||
+          chatId.startsWith(request.auth.uid + "_") || 
+          chatId.endsWith("_" + request.auth.uid) ||
+          (exists(/databases/$(database)/documents/chats/$(chatId)) && 
+           get(/databases/$(database)/documents/chats/$(chatId)).data.get('participants', []).hasAny([request.auth.uid]))
+        );
+        allow write: if isAuthenticated() && (
+          isSuperAdmin() ||
+          chatId.startsWith(request.auth.uid + "_") || 
+          chatId.endsWith("_" + request.auth.uid) ||
+          (exists(/databases/$(database)/documents/chats/$(chatId)) && 
+           get(/databases/$(database)/documents/chats/$(chatId)).data.get('participants', []).hasAny([request.auth.uid]))
+        );
+      }
+    }
+
+    // Métricas
+    match /metricas_mensuales/{docId} {
+      allow read: if isSuperAdmin()
+        || (resource.data != null && isAdminOf(resource.data.barberia_id));
+      allow write: if isSuperAdmin();
+    }
+
+    // Log
+    match /log_plataforma/{logId} {
+      allow read: if isSuperAdmin();
+      allow write: if isAuthenticated();
+    }
+  }
+}

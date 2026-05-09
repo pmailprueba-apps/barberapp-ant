@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 192 192" fill="none">
+  <rect width="192" height="192" rx="32" fill="#020617"/>
+  <!-- Barber scissors icon -->
+  <g transform="translate(32, 32)">
+    <!-- Left blade -->
+    <path d="M40 20 L80 50 L75 55 L35 25 Z" fill="#D4AF37"/>
+    <!-- Right blade -->
+    <path d="M80 20 L40 50 L45 55 L85 25 Z" fill="#D4AF37"/>
+    <!-- Handle circle -->
+    <circle cx="60" cy="70" r="25" fill="#020617" stroke="#D4AF37" stroke-width="4"/>
+    <!-- Comb teeth -->
+    <rect x="50" y="15" width="4" height="15" fill="#D4AF37" rx="1"/>
+    <rect x="58" y="12" width="4" height="18" fill="#D4AF37" rx="1"/>
+    <rect x="66" y="15" width="4" height="15" fill="#D4AF37" rx="1"/>
+  </g>
+  <!-- B text -->
+  <text x="96" y="140" font-family="Arial Black, sans-serif" font-size="48" font-weight="900" fill="#D4AF37" text-anchor="middle">B</text>
+</svg>

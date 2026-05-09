@@ -1,0 +1,71 @@
+@import "tailwindcss";
+
+@theme {
+  --color-gold: #D4AF37;
+  --color-gold-light: #F1D592;
+  --color-gold-dark: #996515;
+
+  --color-navy: #0F172A;
+  --color-navy-light: #1E293B;
+  --color-navy-dark: #020617;
+
+  --color-background-primary: #020617;
+  --color-foreground: #F8FAFC;
+
+  --color-card: rgba(30, 41, 59, 0.5);
+  --color-border: rgba(212, 175, 55, 0.2);
+
+  --font-sans: var(--font-sans);
+  --font-mono: var(--font-mono);
+
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+}
+
+:root {
+  --dark: #0D1117;
+  --navy: #1E3A5F;
+  --card: #161B22;
+  --gold: #C9A84C;
+  --white: #F0F6FF;
+  --muted: #8B949E;
+  --teal: #0D9488;
+  --green: #22C55E;
+  --red: #EF4444;
+  --amber: #F59E0B;
+  --purple: #8B5CF6;
+  --blue: #3B82F6;
+}
+
+body {
+  background: var(--dark);
+  color: var(--white);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom Glassmorphism Utility */
+.glass {
+  background: rgba(22, 27, 34, 0.8);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(201, 168, 76, 0.18);
+}
+
+/* Gold gradient */
+.gold-gradient {
+  background: linear-gradient(135deg, #D4AF37 0%, #F1D592 50%, #996515 100%);
+}
+
+.gold-text-gradient {
+  background: linear-gradient(135deg, #D4AF37 0%, #F1D592 50%, #996515 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Utility classes for roles */
+.role-superadmin { color: var(--purple); }
+.role-admin { color: var(--gold); }
+.role-barbero { color: var(--blue); }
+.role-cliente { color: var(--teal); }

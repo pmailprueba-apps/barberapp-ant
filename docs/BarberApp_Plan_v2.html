@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BarberApp — Plan de Desarrollo 22 Pasos</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Bebas+Neue&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#07090E;--card:#0E1219;--card2:#141B26;--border:rgba(201,168,76,.12);
+  --gold:#C9A84C;--gold2:#E8C570;--white:#EEF2FF;--muted:#6B7A8D;--dim:#3A4553;
+  --teal:#0D9488;--green:#22C55E;--red:#EF4444;--amber:#F59E0B;--purple:#8B5CF6;--blue:#3B82F6;--pink:#EC4899;
+  --radius:10px;--font:'Space Grotesk',sans-serif;--mono:'JetBrains Mono',monospace;--display:'Bebas Neue',sans-serif;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--font);background:var(--bg);color:var(--white);overflow-x:hidden}
+::-webkit-scrollbar{width:3px}::-webkit-scrollbar-track{background:var(--bg)}::-webkit-scrollbar-thumb{background:var(--gold);border-radius:2px}
+
+/* NAV */
+.topbar{position:fixed;top:0;left:0;right:0;z-index:100;background:rgba(7,9,14,.88);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:.6rem 2rem;display:flex;align-items:center;justify-content:space-between}
+.topbar-brand{font-family:var(--display);font-size:22px;letter-spacing:3px;color:var(--gold)}
+.topbar-brand span{color:var(--white)}
+.topbar-pills{display:flex;gap:4px;flex-wrap:wrap}
+.pill{padding:4px 12px;border-radius:20px;font-size:11px;font-weight:500;cursor:pointer;border:1px solid var(--border);color:var(--muted);background:transparent;transition:all .15s}
+.pill:hover,.pill.on{background:rgba(201,168,76,.12);color:var(--gold);border-color:rgba(201,168,76,.35)}
+.pill .ct{background:var(--gold);color:var(--bg);font-size:9px;font-weight:700;padding:1px 5px;border-radius:8px;margin-left:4px}
+
+/* HERO */
+.hero{min-height:60vh;display:flex;align-items:center;padding:8rem 3rem 4rem;position:relative}
+.hero::after{content:'';position:absolute;top:0;right:0;width:45%;height:100%;background:radial-gradient(ellipse at 80% 30%,rgba(201,168,76,.06) 0%,transparent 65%);pointer-events:none}
+.hero-content{position:relative;z-index:1;max-width:700px}
+.hero h1{font-family:var(--display);font-size:clamp(52px,7vw,88px);line-height:.9;letter-spacing:4px;margin-bottom:1rem}
+.hero h1 em{font-style:normal;color:var(--gold)}
+.hero h1 small{display:block;font-size:.35em;color:var(--muted);letter-spacing:6px;margin-top:.5rem}
+.hero-meta{display:flex;gap:1.5rem;margin-top:2rem;flex-wrap:wrap}
+.meta-item{display:flex;flex-direction:column;gap:2px}
+.meta-val{font-family:var(--display);font-size:28px;letter-spacing:2px}
+.meta-lbl{font-size:10px;color:var(--muted);letter-spacing:1px;text-transform:uppercase}
+.progress-bar{margin-top:2rem;max-width:500px}
+.progress-track{height:6px;background:var(--card2);border-radius:3px;overflow:hidden}
+.progress-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--gold),var(--teal));transition:width .6s ease}
+.progress-label{display:flex;justify-content:space-between;font-size:11px;color:var(--muted);margin-top:6px}
+
+/* SECTIONS */
+.section{padding:4rem 3rem;border-top:1px solid rgba(255,255,255,.03)}
+.sec-head{margin-bottom:2rem}
+.sec-num{font-family:var(--display);font-size:48px;color:rgba(201,168,76,.1);line-height:1;letter-spacing:2px}
+.sec-title{font-family:var(--display);font-size:26px;letter-spacing:2px;margin-top:-6px}
+.sec-title em{font-style:normal;color:var(--gold)}
+.sec-sub{font-size:12px;color:var(--muted);margin-top:4px}
+
+/* PHASE GRID */
+.phase-header{display:flex;align-items:center;gap:12px;margin-bottom:1.5rem;padding-bottom:.75rem;border-bottom:1px solid var(--border)}
+.phase-num{font-family:var(--display);font-size:36px;letter-spacing:2px}
+.phase-title{font-size:14px;font-weight:600;color:var(--white)}
+.phase-sub{font-size:11px;color:var(--muted)}
+
+.steps-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px}
+
+/* STEP CARD */
+.step-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;cursor:pointer;transition:border-color .2s,transform .15s}
+.step-card:hover{border-color:rgba(201,168,76,.3);transform:translateY(-2px)}
+.step-card.done{border-color:rgba(34,197,94,.3)}
+.step-card.active-step{border-color:rgba(201,168,76,.5);box-shadow:0 0 20px rgba(201,168,76,.08)}
+.step-top{padding:.875rem 1rem;display:flex;align-items:flex-start;gap:10px}
+.step-number{min-width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:15px;letter-spacing:1px;flex-shrink:0;margin-top:1px}
+.step-number.done-num{background:rgba(34,197,94,.15);color:var(--green)}
+.step-number.pending-num{background:rgba(201,168,76,.12);color:var(--gold)}
+.step-number.future-num{background:rgba(100,116,139,.1);color:var(--dim)}
+.step-info h3{font-size:13px;font-weight:600;color:var(--white);margin-bottom:2px;line-height:1.4}
+.step-status{font-size:10px;font-weight:500;padding:1px 8px;border-radius:10px;margin-top:4px;display:inline-block}
+.status-done{background:rgba(34,197,94,.12);color:var(--green);border:1px solid rgba(34,197,94,.25)}
+.status-next{background:rgba(201,168,76,.12);color:var(--gold);border:1px solid rgba(201,168,76,.25)}
+.status-pending{background:rgba(100,116,139,.08);color:var(--dim);border:1px solid rgba(100,116,139,.15)}
+
+.step-detail{display:none;padding:0 1rem .875rem;border-top:1px solid var(--border)}
+.step-card.open .step-detail{display:block;padding-top:.875rem}
+
+.detail-section{margin-bottom:.75rem}
+.detail-label{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:4px}
+.detail-items{font-size:11.5px;color:var(--muted);line-height:1.8}
+.detail-items span{display:block}
+.detail-items span::before{content:'→ ';color:var(--dim)}
+
+.agent-tags{display:flex;flex-wrap:wrap;gap:4px;margin-top:6px}
+.agent-tag{font-size:10px;font-family:var(--mono);padding:2px 8px;border-radius:4px;background:rgba(139,92,246,.08);color:#C4B5FD;border:1px solid rgba(139,92,246,.15)}
+.skill-tag{background:rgba(13,148,136,.08);color:#2DD4BF;border:1px solid rgba(13,148,136,.15)}
+
+/* SKILLS TABLE */
+.skills-table{width:100%;border-collapse:collapse;font-size:12px}
+.skills-table th{text-align:left;font-size:10px;font-weight:600;color:var(--dim);letter-spacing:1px;text-transform:uppercase;padding:8px 12px;border-bottom:1px solid var(--border)}
+.skills-table td{padding:9px 12px;border-bottom:1px solid rgba(255,255,255,.03);color:var(--muted);vertical-align:top}
+.skills-table tr:hover td{background:rgba(255,255,255,.015)}
+.cat-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:4px;display:inline-block}
+
+/* PROJECT INFO */
+.info-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.info-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:1rem}
+.info-card .label{font-size:10px;font-weight:600;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.info-card .value{font-family:var(--mono);font-size:12px;color:var(--gold);word-break:break-all}
+
+/* TIMELINE BAR */
+.timeline{display:flex;align-items:center;gap:0;margin:2rem 0 1.5rem;padding:0 .5rem}
+.tl-node{flex:1;text-align:center;position:relative}
+.tl-dot{width:12px;height:12px;border-radius:50%;margin:0 auto 6px;border:2px solid}
+.tl-dot-done{background:var(--green);border-color:var(--green)}
+.tl-dot-next{background:var(--gold);border-color:var(--gold);box-shadow:0 0 10px rgba(201,168,76,.4)}
+.tl-dot-pending{background:transparent;border-color:var(--dim)}
+.tl-line{position:absolute;top:5px;left:50%;right:-50%;height:2px;z-index:-1}
+.tl-line-done{background:var(--green)}
+.tl-line-pending{background:var(--dim)}
+.tl-label{font-size:10px;color:var(--muted);line-height:1.4}
+.tl-label strong{display:block;color:var(--white);font-weight:600}
+
+/* FOOTER */
+.footer{padding:3rem;border-top:1px solid var(--border);text-align:center}
+.footer-brand{font-family:var(--display);font-size:28px;letter-spacing:4px;color:var(--gold)}
+.footer-sub{font-size:11px;color:var(--muted);margin-top:4px}
+
+@media(max-width:768px){
+  .topbar{padding:.5rem 1rem}.topbar-pills{display:none}
+  .hero,.section{padding:2rem 1rem}
+  .steps-grid{grid-template-columns:1fr}
+  .timeline{display:none}
+}
+</style>
+</head>
+<body>
+
+<!-- TOPBAR -->
+<nav class="topbar">
+  <div class="topbar-brand"><span>BARBER</span>APP</div>
+  <div class="topbar-pills">
+    <button class="pill on" onclick="filterPhase('all',this)">Todos <span class="ct">22</span></button>
+    <button class="pill" onclick="filterPhase(1,this)">Fase 1 <span class="ct">11</span></button>
+    <button class="pill" onclick="filterPhase(2,this)">Fase 2 <span class="ct">4</span></button>
+    <button class="pill" onclick="filterPhase(3,this)">Fase 3 <span class="ct">4</span></button>
+    <button class="pill" onclick="filterPhase(4,this)">Fase 4 <span class="ct">1</span></button>
+    <button class="pill" onclick="filterPhase('done',this)">✓ Completado</button>
+    <button class="pill" onclick="filterPhase('next',this)">→ Siguiente</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-content">
+    <h1>PLAN DE<br><em>DESARROLLO</em><small>22 pasos · 4 fases · 1 aplicación completa</small></h1>
+    <div class="hero-meta">
+      <div class="meta-item"><div class="meta-val" style="color:var(--green)">1<span style="font-size:18px">/22</span></div><div class="meta-lbl">Pasos completados</div></div>
+      <div class="meta-item"><div class="meta-val" style="color:var(--gold)">Paso 2</div><div class="meta-lbl">Siguiente pendiente</div></div>
+      <div class="meta-item"><div class="meta-val" style="color:var(--teal)">Next.js 16</div><div class="meta-lbl">Stack actual</div></div>
+      <div class="meta-item"><div class="meta-val" style="color:var(--purple)">Firebase</div><div class="meta-lbl">Backend</div></div>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-track"><div class="progress-fill" style="width:4.5%"></div></div>
+      <div class="progress-label"><span>Progreso general</span><span>1 de 22 (4.5%)</span></div>
+    </div>
+  </div>
+</section>
+
+<!-- TIMELINE VISUAL -->
+<div style="padding:0 3rem">
+  <div class="timeline">
+    <div class="tl-node"><div class="tl-dot tl-dot-done"></div><div class="tl-line tl-line-done"></div><div class="tl-label"><strong>F1</strong>Fundamentos</div></div>
+    <div class="tl-node"><div class="tl-dot tl-dot-next"></div><div class="tl-line tl-line-pending"></div><div class="tl-label"><strong>F2</strong>WhatsApp+PWA</div></div>
+    <div class="tl-node"><div class="tl-dot tl-dot-pending"></div><div class="tl-line tl-line-pending"></div><div class="tl-label"><strong>F3</strong>Testing+Deploy</div></div>
+    <div class="tl-node"><div class="tl-dot tl-dot-pending"></div><div class="tl-label"><strong>F4</strong>n8n Prep</div></div>
+  </div>
+</div>
+
+<!-- STEPS -->
+<section class="section" id="steps">
+
+  <!-- FASE 1 -->
+  <div class="phase-block" data-phase="1">
+    <div class="phase-header">
+      <div class="phase-num" style="color:var(--teal)">F1</div>
+      <div><div class="phase-title">Fundamentos</div><div class="phase-sub">Pasos 1–11 · Auth, roles, CRUD, horarios, citas, puntos, dashboards</div></div>
+    </div>
+    <div class="steps-grid" id="grid-f1"></div>
+  </div>
+
+  <!-- FASE 2 -->
+  <div class="phase-block" data-phase="2" style="margin-top:3rem">
+    <div class="phase-header">
+      <div class="phase-num" style="color:var(--green)">F2</div>
+      <div><div class="phase-title">WhatsApp + PWA</div><div class="phase-sub">Pasos 12–15 · Bot, mensajes automáticos, PWA, QR</div></div>
+    </div>
+    <div class="steps-grid" id="grid-f2"></div>
+  </div>
+
+  <!-- FASE 3 -->
+  <div class="phase-block" data-phase="3" style="margin-top:3rem">
+    <div class="phase-header">
+      <div class="phase-num" style="color:var(--amber)">F3</div>
+      <div><div class="phase-title">Testing + Deploy</div><div class="phase-sub">Pasos 16–19 · E2E testing, Vercel, docs, capacitación</div></div>
+    </div>
+    <div class="steps-grid" id="grid-f3"></div>
+  </div>
+
+  <!-- FASE 4 -->
+  <div class="phase-block" data-phase="4" style="margin-top:3rem">
+    <div class="phase-header">
+      <div class="phase-num" style="color:var(--purple)">F4</div>
+      <div><div class="phase-title">Phase 2 Prep (n8n)</div><div class="phase-sub">Paso 20 · Migración ManyChat→n8n, workflows</div></div>
+    </div>
+    <div class="steps-grid" id="grid-f4"></div>
+  </div>
+
+</section>
+
+<!-- SKILLS & AGENTS TABLE -->
+<section class="section" id="skills">
+  <div class="sec-head">
+    <div class="sec-num">SK</div>
+    <div class="sec-title">SKILLS & <em>AGENTES</em></div>
+    <div class="sec-sub">Herramientas y agentes recomendados por categoría</div>
+  </div>
+  <div style="overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border)">
+    <table class="skills-table">
+      <thead><tr style="background:var(--card)"><th>Categoría</th><th>Skills</th><th>Agentes</th></tr></thead>
+      <tbody>
+        <tr><td><span class="cat-badge" style="background:rgba(13,148,136,.1);color:#2DD4BF">Texto natural</span></td><td><code style="color:#2DD4BF">humanizer</code></td><td style="font-family:var(--mono);font-size:11px;color:#C4B5FD">readme-agent · video-script-agent</td></tr>
+        <tr><td><span class="cat-badge" style="background:rgba(59,130,246,.1);color:#93C5FD">Browser testing</span></td><td><code style="color:#2DD4BF">agent-browser</code></td><td style="font-family:var(--mono);font-size:11px;color:#C4B5FD">e2e-testing-agent</td></tr>
+        <tr><td><span class="cat-badge" style="background:rgba(245,158,11,.1);color:#FCD34D">Auth / Firebase</span></td><td>—</td><td style="font-family:var(--mono);font-size:11px;color:#C4B5FD">firebase-auth-expert · rbac-agent · firestore-rules-agent</td></tr>
+        <tr><td><span class="cat-badge" style="background:rgba(236,72,153,.1);color:#F9A8D4">UI / Frontend</span></td><td>—</td><td style="font-family:var(--mono);font-size:11px;color:#C4B5FD">admin-dashboard-agent · barber-dashboard-agent · client-dashboard-agent · calendar-ui-agent · charts-agent</td></tr>
+        <tr><td><span class="cat-badge" style="background:rgba(201,168,76,.1);color:var(--gold)">Lógica negocio</span></td><td>—</td><td style="font-family:var(--mono);font-size:11px;color:#C4B5FD">scheduler-agent · transaction-agent · loyalty-engine-agent · points-dashboard-agent</td></tr>
+        <tr><td><span class="cat-badge" style="background:rgba(34,197,94,.1);color:#86EFAC">WhatsApp</span></td><td>—</td><td style="font-family:var(--mono);font-size:11px;color:#C4B5FD">whatsapp-integration-agent · webhook-handler-agent · notification-agent · n8n-workflow-agent</td></tr>
+        <tr><td><span class="cat-badge" style="background:rgba(139,92,246,.1);color:#C4B5FD">PWA / QR</span></td><td>—</td><td style="font-family:var(--mono);font-size:11px;color:#C4B5FD">pwa-expert-agent · qr-system-agent · deeplink-agent</td></tr>
+        <tr><td><span class="cat-badge" style="background:rgba(239,68,68,.1);color:#FCA5A5">Deploy</span></td><td>—</td><td style="font-family:var(--mono);font-size:11px;color:#C4B5FD">vercel-deploy-agent · firebase-hosting-agent</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- PROJECT INFO -->
+<section class="section" id="project">
+  <div class="sec-head">
+    <div class="sec-num">PJ</div>
+    <div class="sec-title">PROYECTO <em>BASE</em></div>
+    <div class="sec-sub">Configuración técnica del proyecto actual</div>
+  </div>
+  <div class="info-grid">
+    <div class="info-card"><div class="label">Ubicación</div><div class="value">/Users/macbook/Documents/BLENDER ANT/barberapp</div></div>
+    <div class="info-card"><div class="label">Firebase Project</div><div class="value">barberapp-ant-2026</div></div>
+    <div class="info-card"><div class="label">Stack</div><div class="value">Next.js 16.2 + React 19 + Tailwind v4 + Firebase 11 + TypeScript strict</div></div>
+    <div class="info-card"><div class="label">Spec completa</div><div class="value">/BLENDER ANT/PROYECTOS/09-barberias/BARBERAPP_SPEC.md</div></div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="footer-brand">BARBERAPP</div>
+  <div class="footer-sub">Plan de Desarrollo v2 · 22 pasos · 4 fases · 2026</div>
+</footer>
+
+<script>
+const STEPS = [
+  // FASE 1
+  {n:1,phase:1,title:"Next.js 16.2 + React 19 + Tailwind CSS v4",status:"done",
+    skills:["nextjs-developer"],agents:[],
+    actions:["Proyecto base creado","Estructura inicial configurada","Tailwind v4 configurado","TypeScript strict activado"]},
+  {n:2,phase:1,title:"Auth + Firebase Custom Claims + Layout Base",status:"next",
+    skills:["humanizer"],agents:["firebase-auth-expert","nextjs-developer"],
+    actions:["firebase.ts + Admin SDK","AuthContext + useAuth hook","Login UI (email + Google)","Dashboard layout base","Middleware de validación por rol"]},
+  {n:3,phase:1,title:"Estructura de carpetas + TypeScript types",status:"pending",
+    skills:[],agents:["typescript-expert","file-structure-agent"],
+    actions:["/types/firebase.ts con interfaces","types/roles.ts con enums","Estructura app/(auth)/ y app/(dashboard)/","Barrel exports"]},
+  {n:4,phase:1,title:"Sistema de roles (4 roles)",status:"pending",
+    skills:[],agents:["rbac-agent","firestore-rules-agent"],
+    actions:["Colección Firestore users con role+barberia_id","Security Rules completas por rol","RoleGate component para proteger rutas","Custom Claims en Auth"]},
+  {n:5,phase:1,title:"CRUD Barberías",status:"pending",
+    skills:[],agents:["firestore-crud-agent","admin-dashboard-agent"],
+    actions:["barberias.ts — service completo","Upload de logo a Firebase Storage","UI admin: crear, editar, listar barberías","Filtros por estado (activa/suspendida/bloqueada)"]},
+  {n:6,phase:1,title:"Gestión de servicios",status:"pending",
+    skills:[],agents:["service-catalog-agent","toggle-ui-agent"],
+    actions:["5 servicios fijos: Corte, Barba, Bigote, Afeitado, Facial","UI con toggles activar/desactivar","Configurar precio y duración por servicio","Vincular servicios a barbería"]},
+  {n:7,phase:1,title:"Motor de horarios / slots",status:"pending",
+    skills:[],agents:["scheduler-agent","time-calculator-agent"],
+    actions:["generarSlots() — algoritmo completo","Excluir slots ya ocupados (consulta Firestore)","Excluir domingos y días bloqueados","Slots cada 30 min basados en duración de servicio"]},
+  {n:8,phase:1,title:"Crear / cancelar citas",status:"pending",
+    skills:[],agents:["transaction-agent","calendar-ui-agent"],
+    actions:["runTransaction() anti-doble-booking","UI de reservar: servicio→barbero→fecha→hora→confirmar","Cancelar con validación de 1 hora mínima","Política de cancelación con mensajes al cliente","Botón cancelar manual para el dueño (sin restricción de tiempo)"]},
+  {n:9,phase:1,title:"Sistema de puntos",status:"pending",
+    skills:[],agents:["loyalty-engine-agent","points-dashboard-agent"],
+    actions:["Regla: 1 punto por cada $10 MXN","Transacciones de acumulación y canje","UI puntos del cliente con barra de progreso","Canje: 1,000 pts = 1 corte gratis"]},
+  {n:10,phase:1,title:"Dashboard Admin Barbería",status:"pending",
+    skills:[],agents:["admin-dashboard-agent","charts-agent"],
+    actions:["Métricas: citas hoy, ingresos, cancelaciones, origen","QR generator integrado","Lista de barberos con estado","Accesos rápidos a agenda, clientes, servicios"]},
+  {n:11,phase:1,title:"Dashboard Barbero",status:"pending",
+    skills:[],agents:["barber-dashboard-agent","daily-sales-agent"],
+    actions:["Agenda del día hora por hora","Ventas diarias acumuladas","Botón: Completar cita / No se presentó","Calificación promedio del barbero"]},
+
+  // FASE 2
+  {n:12,phase:2,title:"WhatsApp Bot (ManyChat Phase 1)",status:"pending",
+    skills:[],agents:["whatsapp-integration-agent","webhook-handler-agent"],
+    actions:["POST /api/webhooks/whatsapp","Flow: bienvenida → menú → servicio → hora → confirmar","Conexión ManyChat ↔ API backend","Registro de canal='whatsapp' en cada cita"]},
+  {n:13,phase:2,title:"Mensajes automáticos",status:"pending",
+    skills:[],agents:["notification-agent","cloud-functions-agent"],
+    actions:["Confirmación de cita inmediata","Recordatorio 1 hora antes (cron cada 15 min)","Mensaje de cancelación (por cliente o por dueño)","Aviso de intento de cancelación fuera de tiempo"]},
+  {n:14,phase:2,title:"PWA setup",status:"pending",
+    skills:[],agents:["pwa-expert-agent","installability-agent"],
+    actions:["@ducanh2912/next-pwa integración","manifest.json con tema barbería (negro+dorado)","Íconos 192x192 y 512x512","Service Worker para cache offline parcial","Notificaciones push vía Firebase Cloud Messaging"]},
+  {n:15,phase:2,title:"Sistema QR",status:"pending",
+    skills:[],agents:["qr-system-agent","deeplink-agent"],
+    actions:["Generar QR por barbería con logo","Landing /b/[slug] por barbería","utm_source=qr para tracking de origen","Botón imprimir QR en el panel admin"]},
+
+  // FASE 3
+  {n:16,phase:3,title:"Testing con agent-browser",status:"pending",
+    skills:["agent-browser"],agents:["e2e-testing-agent"],
+    actions:["Test flujo completo: registro → reservar → cancelar","Test roles: cada rol ve solo lo que debe","Test doble booking (dos clientes mismo slot)","Screenshots automáticas de cada pantalla"]},
+  {n:17,phase:3,title:"Deploy a Vercel + Firebase Hosting",status:"pending",
+    skills:[],agents:["vercel-deploy-agent","firebase-hosting-agent"],
+    actions:["vercel deploy --prod","firebase deploy (Firestore Rules + Hosting)","Configurar dominio barberapp.mx","SSL automático","Variables de entorno en Vercel"]},
+  {n:18,phase:3,title:"Documentación final",status:"pending",
+    skills:["humanizer"],agents:["readme-agent"],
+    actions:["README.md completo","INSTRUCCIONES.md para nuevo admin","Variables .env documentadas","Guía de troubleshooting"]},
+  {n:19,phase:3,title:"Capacitación + handoff",status:"pending",
+    skills:["humanizer"],agents:["video-script-agent"],
+    actions:["Script de video tutorial por rol","Checklist primeros pasos para nueva barbería","Guía PDF de operación diaria","FAQ de preguntas frecuentes"]},
+
+  // FASE 4
+  {n:20,phase:4,title:"Phase 2 prep — n8n",status:"pending",
+    skills:[],agents:["n8n-workflow-agent","migration-agent"],
+    actions:["Crear interfaz IWhatsAppProvider abstracta","Workflows n8n: reserva, confirmación, recordatorio","Indicadores de volumen para decidir migración","Documentación de migración ManyChat → n8n"]},
+];
+
+// RENDER STEPS
+function renderSteps(filter) {
+  ['f1','f2','f3','f4'].forEach(f => document.getElementById('grid-'+f).innerHTML = '');
+
+  const filtered = filter === 'all' ? STEPS
+    : filter === 'done' ? STEPS.filter(s => s.status === 'done')
+    : filter === 'next' ? STEPS.filter(s => s.status === 'next')
+    : STEPS.filter(s => s.phase === filter);
+
+  // Show/hide phase blocks
+  document.querySelectorAll('.phase-block').forEach(b => {
+    const ph = parseInt(b.dataset.phase);
+    if (filter === 'all' || filter === 'done' || filter === 'next') {
+      b.style.display = filtered.some(s => s.phase === ph) ? 'block' : 'none';
+    } else {
+      b.style.display = ph === filter ? 'block' : 'none';
+    }
+  });
+
+  filtered.forEach(s => {
+    const grid = document.getElementById('grid-f'+s.phase);
+    if (!grid) return;
+
+    const numClass = s.status === 'done' ? 'done-num' : s.status === 'next' ? 'pending-num' : 'future-num';
+    const statusClass = s.status === 'done' ? 'status-done' : s.status === 'next' ? 'status-next' : 'status-pending';
+    const statusText = s.status === 'done' ? '✓ Completado' : s.status === 'next' ? '→ Siguiente' : 'Pendiente';
+    const cardClass = s.status === 'done' ? 'done' : s.status === 'next' ? 'active-step' : '';
+
+    const skillsHtml = s.skills.map(sk => `<span class="agent-tag skill-tag">${sk}</span>`).join('');
+    const agentsHtml = s.agents.map(ag => `<span class="agent-tag">${ag}</span>`).join('');
+    const actionsHtml = s.actions.map(a => `<span>${a}</span>`).join('');
+
+    grid.innerHTML += `
+      <div class="step-card ${cardClass}" onclick="this.classList.toggle('open')">
+        <div class="step-top">
+          <div class="step-number ${numClass}">${s.n}</div>
+          <div class="step-info">
+            <h3>${s.title}</h3>
+            <span class="step-status ${statusClass}">${statusText}</span>
+          </div>
+        </div>
+        <div class="step-detail">
+          <div class="detail-section">
+            <div class="detail-label">Acciones</div>
+            <div class="detail-items">${actionsHtml}</div>
+          </div>
+          ${(skillsHtml || agentsHtml) ? `
+          <div class="detail-section">
+            <div class="detail-label">Skills & Agentes</div>
+            <div class="agent-tags">${skillsHtml}${agentsHtml}</div>
+          </div>` : ''}
+        </div>
+      </div>`;
+  });
+}
+
+function filterPhase(phase, btn) {
+  document.querySelectorAll('.pill').forEach(p => p.classList.remove('on'));
+  if (btn) btn.classList.add('on');
+  renderSteps(phase);
+}
+
+// Init
+renderSteps('all');
+</script>
+</body>
+</html>

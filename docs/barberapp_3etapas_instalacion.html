@@ -1,0 +1,290 @@
+
+<style>
+:root {
+  --font-sans: system-ui, -apple-system, sans-serif;
+  --color-background-primary: #ffffff;
+  --color-background-secondary: #f5f5f7;
+  --color-background-info: #e8f4fd;
+  --color-background-success: #e6f7ed;
+  --color-background-warning: #fef3e2;
+  --color-background-danger: #fee7e7;
+  --color-text-primary: #1d1d1f;
+  --color-text-secondary: #6e6e73;
+  --color-text-info: #0071e3;
+  --color-text-success: #34c759;
+  --color-text-warning: #f5a623;
+  --color-text-danger: #ff3b30;
+  --color-border-secondary: #d2d2d7;
+  --color-border-tertiary: #e5e5ea;
+  --color-border-info: #b8d4f0;
+  --border-radius-lg: 12px;
+  --border-radius-md: 8px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+.w{font-family:var(--font-sans);padding:1.5rem 0}
+.lbl{font-size:11px;font-weight:500;color:var(--color-text-secondary);letter-spacing:.08em;text-transform:uppercase;margin-bottom:.75rem}
+.tabs{display:flex;gap:6px;margin-bottom:1.25rem;flex-wrap:wrap}
+.tab{padding:7px 16px;border-radius:20px;font-size:13px;border:0.5px solid var(--color-border-secondary);cursor:pointer;color:var(--color-text-secondary);background:var(--color-background-primary)}
+.tab.active{background:var(--color-background-info);color:var(--color-text-info);border-color:var(--color-border-info)}
+.panel{display:none}.panel.show{display:block}
+.card{background:var(--color-background-primary);border:0.5px solid var(--color-border-tertiary);border-radius:var(--border-radius-lg);padding:1rem;margin-bottom:12px}
+.card-title{font-size:14px;font-weight:500;color:var(--color-text-primary);margin-bottom:6px;display:flex;align-items:center;gap:8px}
+.step-list{margin-top:8px}
+.step{display:flex;gap:10px;margin-bottom:10px;align-items:flex-start}
+.num{min-width:22px;height:22px;border-radius:50%;background:var(--color-background-info);color:var(--color-text-info);font-size:11px;font-weight:500;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.num-g{background:var(--color-background-success);color:var(--color-text-success)}
+.num-a{background:var(--color-background-warning);color:var(--color-text-warning)}
+.step-body{font-size:12px;color:var(--color-text-secondary);line-height:1.6}
+.step-body strong{color:var(--color-text-primary);font-weight:500}
+.badge{display:inline-block;font-size:11px;padding:2px 8px;border-radius:20px;margin-left:6px;font-weight:500}
+.bg{background:var(--color-background-success);color:var(--color-text-success)}
+.bb{background:var(--color-background-info);color:var(--color-text-info)}
+.ba{background:var(--color-background-warning);color:var(--color-text-warning)}
+.br{background:var(--color-background-danger);color:var(--color-text-danger)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+.mini{background:var(--color-background-secondary);border-radius:var(--border-radius-md);padding:.75rem}
+.mini-lbl{font-size:11px;color:var(--color-text-secondary);margin-bottom:3px}
+.mini-val{font-size:13px;font-weight:500;color:var(--color-text-primary)}
+.link-box{background:var(--color-background-info);border:0.5px solid var(--color-border-info);border-radius:var(--border-radius-md);padding:.75rem 1rem;margin:10px 0;cursor:pointer}
+.link-box p{font-size:12px;color:var(--color-text-info);font-weight:500}
+.link-box span{font-size:11px;color:var(--color-text-secondary)}
+.divider{height:0.5px;background:var(--color-border-tertiary);margin:1rem 0}
+.phone-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.phone-card{background:var(--color-background-secondary);border-radius:var(--border-radius-lg);padding:1rem}
+.phone-title{font-size:13px;font-weight:500;color:var(--color-text-primary);margin-bottom:10px;display:flex;align-items:center;gap:6px}
+.cost-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;border-bottom:0.5px solid var(--color-border-tertiary);font-size:12px}
+.cost-row:last-child{border-bottom:none}
+.cost-lbl{color:var(--color-text-secondary)}
+.cost-val{font-weight:500;color:var(--color-text-primary)}
+.total-box{background:var(--color-background-warning);border-radius:var(--border-radius-md);padding:.75rem;margin-top:10px;display:flex;justify-content:space-between;align-items:center}
+.total-lbl{font-size:12px;color:var(--color-text-warning)}
+.total-val{font-size:16px;font-weight:500;color:var(--color-text-warning)}
+.tag-free{color:var(--color-text-success);font-size:12px;font-weight:500}
+</style>
+
+<div class="w">
+  <h2 style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">Guía de instalación en 3 etapas para BarberApp: PWA, WhatsApp Bot y QR, con costos y pasos por tipo de teléfono</h2>
+
+  <div class="lbl">Selecciona una etapa</div>
+  <div class="tabs">
+    <div class="tab active" onclick="showTab('e1',this)">Etapa 1 — PWA web</div>
+    <div class="tab" onclick="showTab('e2',this)">Etapa 2 — Bot WhatsApp</div>
+    <div class="tab" onclick="showTab('e3',this)">Etapa 3 — QR en local</div>
+    <div class="tab" onclick="showTab('nube',this)">🚀 Nube Gratis</div>
+    <div class="tab" onclick="showTab('costos',this)">💰 Costos WhatsApp</div>
+  </div>
+
+  <!-- ETAPA 1: PWA -->
+  <div class="panel show" id="e1">
+    <div class="card">
+      <div class="card-title">Etapa 1 — PWA: app web instalable <span class="badge bg">$0 — Sin tienda</span></div>
+      <div class="grid2">
+        <div class="mini"><div class="mini-lbl">Costo de publicación</div><div class="mini-val tag-free">$0 — Sin App Store</div></div>
+        <div class="mini"><div class="mini-lbl">Compatible con</div><div class="mini-val">iPhone y Android</div></div>
+        <div class="mini"><div class="mini-lbl">Lo que necesitas</div><div class="mini-val">Solo un dominio web</div></div>
+        <div class="mini"><div class="mini-lbl">Tiempo de instalación</div><div class="mini-val">30 segundos por usuario</div></div>
+      </div>
+    </div>
+
+    <div class="phone-row">
+      <div class="phone-card">
+        <div class="phone-title">📱 iPhone (Safari)</div>
+        <div class="step-list">
+          <div class="step"><div class="num">1</div><div class="step-body">Abrir <strong>Safari</strong> (obligatorio, no Chrome en iPhone)</div></div>
+          <div class="step"><div class="num">2</div><div class="step-body">Entrar al link de la barbería: <strong>barberapp.mx/mi-barberia</strong></div></div>
+          <div class="step"><div class="num">3</div><div class="step-body">Tocar el ícono de <strong>compartir</strong> (cuadrado con flecha hacia arriba)</div></div>
+          <div class="step"><div class="num">4</div><div class="step-body">Desplazar hacia abajo y tocar <strong>"Agregar a pantalla de inicio"</strong></div></div>
+          <div class="step"><div class="num">5</div><div class="step-body">Confirmar el nombre y tocar <strong>"Agregar"</strong> — aparece el ícono en el inicio</div></div>
+          <div class="step"><div class="num">6</div><div class="step-body">Ya funciona como app normal con pantalla completa</div></div>
+        </div>
+      </div>
+      <div class="phone-card">
+        <div class="phone-title">🤖 Android (Chrome)</div>
+        <div class="step-list">
+          <div class="step"><div class="num num-g">1</div><div class="step-body">Abrir <strong>Chrome</strong> en el celular Android</div></div>
+          <div class="step"><div class="num num-g">2</div><div class="step-body">Entrar al link: <strong>barberapp.mx/mi-barberia</strong></div></div>
+          <div class="step"><div class="num num-g">3</div><div class="step-body">Aparece automáticamente un banner abajo: <strong>"Agregar BarberApp a inicio"</strong> — tocar</div></div>
+          <div class="step"><div class="num num-g">4</div><div class="step-body">Si no aparece: tocar los <strong>3 puntos</strong> arriba → "Agregar a pantalla de inicio"</div></div>
+          <div class="step"><div class="num num-g">5</div><div class="step-body">Tocar <strong>"Agregar"</strong> en el cuadro que aparece</div></div>
+          <div class="step"><div class="num num-g">6</div><div class="step-body">El ícono aparece en el menú principal — se abre sin barra del navegador</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ETAPA 2: WHATSAPP -->
+  <div class="panel" id="e2">
+    <div class="card">
+      <div class="card-title">Etapa 2 — Bot de WhatsApp Business <span class="badge ba">$10–40 USD/mes</span></div>
+      <div class="grid2">
+        <div class="mini"><div class="mini-lbl">Plataforma recomendada</div><div class="mini-val">ManyChat (plan gratuito)</div></div>
+        <div class="mini"><div class="mini-lbl">¿El cliente instala algo?</div><div class="mini-val tag-free">No — usa el WhatsApp que ya tiene</div></div>
+        <div class="mini"><div class="mini-lbl">Tiempo de configuración</div><div class="mini-val">1 a 2 días</div></div>
+        <div class="mini"><div class="mini-lbl">Requiere programar</div><div class="mini-val tag-free">No — todo visual</div></div>
+      </div>
+    </div>
+
+    <div class="lbl">Pasos de configuración — Barbero (dueño del negocio)</div>
+    <div class="card">
+      <div class="step-list">
+        <div class="step"><div class="num num-a">1</div><div class="step-body"><strong>Descargar WhatsApp Business</strong> en su celular (gratis en App Store y Play Store) — es diferente al WhatsApp normal</div></div>
+        <div class="step"><div class="num num-a">2</div><div class="step-body"><strong>Registrar su número</strong> de teléfono del negocio en WhatsApp Business. Llenar: nombre de la barbería, descripción, horario y dirección</div></div>
+        <div class="step"><div class="num num-a">3</div><div class="step-body"><strong>Crear cuenta en ManyChat</strong> en manychat.com — el plan gratuito permite hasta 1,000 contactos</div></div>
+        <div class="step"><div class="num num-a">4</div><div class="step-body"><strong>Conectar ManyChat con WhatsApp Business</strong>: en ManyChat ir a Configuración → Canales → WhatsApp → seguir los pasos de conexión</div></div>
+        <div class="step"><div class="num num-a">5</div><div class="step-body"><strong>Crear el flujo de reservas</strong>: en ManyChat usar el editor visual para crear el menú: "1-Corte, 2-Barba, 3-Ambos" con los horarios disponibles</div></div>
+        <div class="step"><div class="num num-a">6</div><div class="step-body"><strong>Activar respuestas automáticas</strong>: cuando el cliente escriba "Hola" el bot responde solo, muestra el menú y confirma la cita</div></div>
+        <div class="step"><div class="num num-a">7</div><div class="step-body"><strong>Probar</strong>: escribir desde otro celular al número de la barbería y verificar que el bot funcione correctamente</div></div>
+      </div>
+    </div>
+
+    <div class="lbl">Cómo lo usa el cliente</div>
+    <div class="card">
+      <div class="step-list">
+        <div class="step"><div class="num">1</div><div class="step-body">Recibe el número de WhatsApp de la barbería (en tarjeta, redes o QR)</div></div>
+        <div class="step"><div class="num">2</div><div class="step-body">Escribe <strong>"Hola"</strong> — el bot responde automáticamente en segundos</div></div>
+        <div class="step"><div class="num">3</div><div class="step-body">El bot pregunta: <strong>¿Qué servicio quieres?</strong> — el cliente elige con un número</div></div>
+        <div class="step"><div class="num">4</div><div class="step-body">El bot muestra horarios disponibles — el cliente elige el que le conviene</div></div>
+        <div class="step"><div class="num">5</div><div class="step-body">Recibe <strong>confirmación automática</strong> con fecha, hora y nombre del barbero</div></div>
+        <div class="step"><div class="num">6</div><div class="step-body">Recibe <strong>recordatorio</strong> 1 hora antes de su cita — sin instalar nada extra</div></div>
+      </div>
+    </div>
+
+    <div class="link-box" onclick="openLink('https://manychat.com/pricing')">
+      <p>Ver precios de ManyChat</p>
+      <span>manychat.com/pricing — plan gratis disponible hasta 1,000 contactos</span>
+    </div>
+  </div>
+
+  <!-- ETAPA 3: QR -->
+  <div class="panel" id="e3">
+    <div class="card">
+      <div class="card-title">Etapa 3 — Código QR en el local <span class="badge bg">$0 — Sin costo extra</span></div>
+      <div class="grid2">
+        <div class="mini"><div class="mini-lbl">Costo</div><div class="mini-val tag-free">Solo impresión del QR</div></div>
+        <div class="mini"><div class="mini-lbl">¿El cliente instala algo?</div><div class="mini-val tag-free">No — solo escanea con la cámara</div></div>
+        <div class="mini"><div class="mini-lbl">Dónde colocar</div><div class="mini-val">Espejo, mostrador, puerta, tarjeta</div></div>
+        <div class="mini"><div class="mini-lbl">Genera el QR</div><div class="mini-val">qr-code-generator.com (gratis)</div></div>
+      </div>
+    </div>
+
+    <div class="lbl">Pasos para configurarlo — Barbero</div>
+    <div class="card">
+      <div class="step-list">
+        <div class="step"><div class="num num-g">1</div><div class="step-body"><strong>Obtener el link de reservas</strong> de la barbería desde el panel de BarberApp — cada barbería tiene su link único</div></div>
+        <div class="step"><div class="num num-g">2</div><div class="step-body">Entrar a <strong>qr-code-generator.com</strong> o <strong>qrcode-monkey.com</strong> (ambos gratuitos)</div></div>
+        <div class="step"><div class="num num-g">3</div><div class="step-body">Pegar el link de la barbería, <strong>personalizar</strong> el QR con el logo y colores de la barbería</div></div>
+        <div class="step"><div class="num num-g">4</div><div class="step-body"><strong>Descargar</strong> el QR en alta resolución (PNG o SVG)</div></div>
+        <div class="step"><div class="num num-g">5</div><div class="step-body"><strong>Imprimir</strong> en tamaño mínimo 10x10 cm para que sea escaneable fácilmente</div></div>
+        <div class="step"><div class="num num-g">6</div><div class="step-body"><strong>Colocar</strong> en lugares visibles: espejo principal, mostrador de pago, puerta de entrada, tarjeta de presentación</div></div>
+        <div class="step"><div class="num num-g">7</div><div class="step-body"><strong>Probar</strong>: abrir la cámara del celular, apuntar al QR y verificar que abre la página de reservas</div></div>
+      </div>
+    </div>
+
+    <div class="lbl">Cómo lo usa el cliente</div>
+    <div class="card">
+      <div class="step-list">
+        <div class="step"><div class="num">1</div><div class="step-body">Ve el código QR en el local o en la tarjeta del barbero</div></div>
+        <div class="step"><div class="num">2</div><div class="step-body">Abre la <strong>cámara del celular</strong> (iPhone y Android lo hacen automáticamente sin app extra)</div></div>
+        <div class="step"><div class="num">3</div><div class="step-body">Apunta la cámara al QR — aparece un link en la pantalla — lo toca</div></div>
+        <div class="step"><div class="num">4</div><div class="step-body">Se abre la <strong>página de reservas</strong> de la barbería directamente en el navegador</div></div>
+        <div class="step"><div class="num">5</div><div class="step-body">Elige servicio, barbero y horario — reserva en menos de 2 minutos</div></div>
+      </div>
+    </div>
+
+    <div class="link-box" onclick="openLink('https://www.qrcode-monkey.com')">
+      <p>Generador de QR gratuito con logo</p>
+      <span>qrcode-monkey.com — personaliza con colores y logo de la barbería</span>
+    </div>
+  </div>
+
+  <!-- NUBE GRATIS: ORACLE + EASYPANEL -->
+  <div class="panel" id="nube">
+    <div class="card">
+      <div class="card-title">Infraestructura Cloud — Oracle Cloud + Easypanel <span class="badge bg">$0 — Siempre Gratis</span></div>
+      <div class="grid2">
+        <div class="mini"><div class="mini-lbl">Servidor (VPS)</div><div class="mini-val">Oracle Cloud (Always Free)</div></div>
+        <div class="mini"><div class="mini-lbl">Panel de Gestión</div><div class="mini-val">Easypanel (Docker Made Easy)</div></div>
+        <div class="mini"><div class="mini-lbl">Vigencia Gratis</div><div class="mini-val tag-free">De por vida (Indefinido)</div></div>
+        <div class="mini"><div class="mini-lbl">Potencia</div><div class="mini-val">4 CPUs ARM / 24GB RAM</div></div>
+      </div>
+      <div class="divider"></div>
+      <div class="mini" style="background:var(--color-background-info); border: 0.5px solid var(--color-border-info); margin-bottom: 12px;">
+        <div class="mini-lbl" style="color:var(--color-text-info)">💡 Uso típico</div>
+        <div class="mini-val" style="font-weight: 400; font-size: 12px;">Si tienes el tier gratuito de Oracle Cloud, <strong>A1 Flex</strong> te permite correr un servidor para pequeñas aplicaciones, una base de datos, o un entorno de desarrollo sin costo.</div>
+      </div>
+      <div class="lbl">¿Cómo funciona la capa gratuita de Oracle?</div>
+      <div class="step-list">
+        <div class="step"><div class="num">1</div><div class="step-body"><strong>Capa "Always Free":</strong> Oracle ofrece servicios que nunca caducan. BarberApp usa la instancia **Ampere A1 Flex**, que es extremadamente potente y gratuita para siempre.</div></div>
+        <div class="step"><div class="num">2</div><div class="step-body"><strong>Crédito Inicial ($300 USD):</strong> Al registrarte, te dan $300 USD para probar servicios "Premium" por 30 días. **No los necesitas para BarberApp**. Una vez que expiren, tu servidor seguirá funcionando bajo la capa "Always Free".</div></div>
+        <div class="step"><div class="num">3</div><div class="step-body"><strong>Mantenimiento:</strong> Mientras tu cuenta esté activa y el servidor tenga uso, Oracle mantiene el servicio sin costo. Es la mejor opción para negocios que inician.</div></div>
+      </div>
+    </div>
+
+    <div class="lbl">Pasos para el despliegue técnico</div>
+    <div class="card">
+      <div class="step-list">
+        <div class="step"><div class="num num-g">1</div><div class="step-body"><strong>Crear Instancia:</strong> En OCI, crear una instancia Ubuntu 22.04 con imagen **Ampere (ARM)**.</div></div>
+        <div class="step"><div class="num num-g">2</div><div class="step-body"><strong>Configurar Red (Ingress):</strong> Abrir puertos 80, 443 y 3000 en la VCN de Oracle Cloud.</div></div>
+        <div class="step"><div class="num num-g">3</div><div class="step-body"><strong>Instalar Easypanel:</strong> Ejecutar el comando de instalación en la terminal (SSH) del servidor.</div></div>
+        <div class="step"><div class="num num-g">4</div><div class="step-body"><strong>Crear Proyecto:</strong> Dentro de Easypanel, crear un nuevo proyecto "BarberApp" y conectar el repositorio de GitHub.</div></div>
+        <div class="step"><div class="num num-g">5</div><div class="step-body"><strong>Variables de Entorno:</strong> Pegar las credenciales de Firebase en la sección "Env Vars" de Easypanel.</div></div>
+        <div class="step"><div class="num num-g">6</div><div class="step-body"><strong>¡Listo!:</strong> Easypanel generará el certificado SSL (HTTPS) y desplegará la app automáticamente.</div></div>
+      </div>
+    </div>
+
+    <div class="link-box" onclick="openLink('https://easypanel.io/docs')">
+      <p>Documentación de Easypanel</p>
+      <span>easypanel.io — Aprende a gestionar tus contenedores Docker fácilmente</span>
+    </div>
+  </div>
+
+  <!-- COSTOS WHATSAPP -->
+  <div class="panel" id="costos">
+    <div class="card">
+      <div class="card-title">Precios WhatsApp Business API 2026 — México</div>
+      <div class="grid2">
+        <div class="mini"><div class="mini-lbl">Modelo de cobro actual</div><div class="mini-val">Por mensaje entregado (desde jul 2025)</div></div>
+        <div class="mini"><div class="mini-lbl">Si el cliente escribe primero</div><div class="mini-val tag-free">Gratis — ventana 24 horas</div></div>
+        <div class="mini"><div class="mini-lbl">Mensaje de utilidad (confirmación cita)</div><div class="mini-val">~$0.004 USD c/u</div></div>
+        <div class="mini"><div class="mini-lbl">Mensaje de marketing (promo)</div><div class="mini-val">~$0.016 USD c/u</div></div>
+      </div>
+      <div class="divider"></div>
+      <div class="lbl">Ejemplo real para una barbería con 100 citas al mes</div>
+      <div class="cost-row"><span class="cost-lbl">100 confirmaciones de cita (utilidad)</span><span class="cost-val">~$0.40 USD</span></div>
+      <div class="cost-row"><span class="cost-lbl">100 recordatorios 1 hora antes (utilidad)</span><span class="cost-val">~$0.40 USD</span></div>
+      <div class="cost-row"><span class="cost-lbl">Clientes que escriben primero (gratis)</span><span class="cost-val tag-free">$0.00</span></div>
+      <div class="cost-row"><span class="cost-lbl">Plataforma ManyChat (plan gratuito)</span><span class="cost-val tag-free">$0.00</span></div>
+      <div class="total-box">
+        <span class="total-lbl">Total estimado por mes (100 citas)</span>
+        <span class="total-val">~$1–3 USD/mes</span>
+      </div>
+    </div>
+
+    <div class="lbl">Links oficiales de precios</div>
+    <div class="link-box" onclick="openLink('https://business.whatsapp.com/products/platform-pricing?lang=es_LA')">
+      <p>Precios oficiales Meta / WhatsApp Business</p>
+      <span>business.whatsapp.com — tabla completa por país y categoría de mensaje</span>
+    </div>
+    <div class="link-box" onclick="openLink('https://manychat.com/pricing')">
+      <p>Precios ManyChat (bot de WhatsApp)</p>
+      <span>manychat.com/pricing — plan gratis hasta 1,000 contactos</span>
+    </div>
+    <div class="link-box" onclick="openLink('https://respond.io/es/blog/whatsapp-business-api-pricing')">
+      <p>Guía completa de precios WhatsApp API 2026</p>
+      <span>respond.io — explicación detallada por categorías y países</span>
+    </div>
+  </div>
+
+</div>
+
+<script>
+function showTab(id, el) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('show'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(id).classList.add('show');
+  el.classList.add('active');
+}
+function openLink(url) {
+  window.open(url, '_blank', 'noopener,noreferrer');
+}
+</script>
