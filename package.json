@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "dev:emulator": "NEXT_PUBLIC_USE_EMULATOR=true next dev",
+    "dev": "NEXT_TURBOPACK=0 next dev",
+    "dev:emulator": "NEXT_TURBOPACK=0 NEXT_PUBLIC_USE_EMULATOR=true next dev",
     "build": "next build",
     "start": "next start",
     "lint": "eslint"

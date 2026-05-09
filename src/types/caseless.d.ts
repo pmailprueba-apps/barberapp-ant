@@ -1,10 +1,15 @@
+// Para resolvedor de tipos caseless (usado en headers HTTP)
+// Importado por chat-view.tsx
+
 declare module 'caseless' {
-  export interface Caseless {
-    set(name: string, value: any, clobber?: boolean): void;
-    get(name: string): any;
-    has(name: string): string | boolean;
-    del(name: string): boolean;
+  interface Caseless {
+    set(name: string, value: string | string[]): void;
+    get(name: string): string | string[] | undefined;
+    has(name: string): boolean;
+    remove(name: string): void;
+    headers(object?: Record<string, string>): Record<string, string>;
   }
-  function caseless(dict?: object): Caseless;
-  export default caseless;
+
+  function caseless(dict?: Record<string, string>): Caseless;
+  export = caseless;
 }
