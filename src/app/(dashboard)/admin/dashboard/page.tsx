@@ -1,14 +1,13 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { formatFecha, formatHora, formatPrecio } from "@/lib/utils";
-import { X, Calendar, User, Scissors, Clock, Check, AlertTriangle, RefreshCw } from "lucide-react";
+import { X, Calendar, User, Scissors, Clock, Check, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
 import { CitaService } from "@/services/citaService";
+import { CancelModal } from "@/components/ui/cancel-modal";
 import { ConfirmCancelModal } from "@/components/ui/confirm-cancel-modal";
-import { db } from "@/lib/firebase";
-import { collection, onSnapshot } from "firebase/firestore";
 
 interface Stats {
   citasHoy: number;
@@ -19,30 +18,13 @@ interface Stats {
 
 interface CitaResumen {
   id: string;
-  cliente_nombre?: string;
-  barbero_nombre?: string;
-  barbero_id?: string;
-  cliente_id?: string;
-  servicio_nombre?: string;
+  cliente_nombre: string;
+  barbero_nombre: string;
+  servicio_nombre: string;
   fecha: string;
   hora: string;
   estado: string;
   precio: number;
-  // From Cita type
-  barberia_id?: string;
-  barberoId?: string;
-  servicio_id?: string;
-  duracion_min?: number;
-  hora_fin?: string;
-  canal?: "pwa" | "whatsapp" | "qr";
-  agendada_en?: Date;
-  confirmacion_enviada_en?: Date | null;
-  recordatorio_enviado_en?: Date | null;
-  completada_en?: Date | null;
-  cancelada_en?: Date | null;
-  cancelada_por?: "cliente" | "admin" | "barbero" | "sistema" | null;
-  motivo_cancelacion?: string | null;
-  calificacion?: number | null;
 }
 
 export default function AdminDashboardPage() {
@@ -51,36 +33,36 @@ export default function AdminDashboardPage() {
   const [citas, setCitas] = useState<CitaResumen[]>([]);
   const [citasPendientes, setCitasPendientes] = useState<CitaResumen[]>([]);
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
   const [cancelModalOpen, setCancelModalOpen] = useState(false);
   const [confirmCancelOpen, setConfirmCancelOpen] = useState(false);
   const [citaToCancel, setCitaToCancel] = useState<CitaResumen | null>(null);
-  const abortControllerRef = useRef<AbortController | null>(null);
-  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const isMounted = useRef(true);
 
-
-  const cargarDashboard = useCallback(async (silent = false) => {
-    if (!user?.barberia_id) return;
-    if (!silent) setRefreshing(true);
-    
-    // Cancelar petición previa si existe
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
+  useEffect(() => {
+    if (authLoading) return;
+    if (!user) {
+      setLoading(false);
+      return;
     }
-    
-    const controller = new AbortController();
-    abortControllerRef.current = controller;
+    if (!user.barberia_id) {
+      setLoading(false);
+      return;
+    }
 
+    cargarDashboard();
+  }, [user, authLoading]);
+
+  const cargarDashboard = async () => {
+    if (!user?.barberia_id) return;
+    
     try {
       const hoy = new Date().toLocaleDateString('sv-SE');
       const token = await user.getIdToken();
       const headers = { "Authorization": `Bearer ${token}` };
       
       const [misCitas, statsRes, misPendientes] = await Promise.all([
-        CitaService.getByBarberia(user.barberia_id, { fecha: hoy }, token, controller.signal),
-        fetch(`/api/barberias/${user.barberia_id}/stats?fecha=${hoy}`, { headers, signal: controller.signal }),
-        CitaService.getByBarberia(user.barberia_id, { estado: "pendiente" }, token, controller.signal),
+        CitaService.getByBarberia(user.barberia_id, { fecha: hoy }, token),
+        fetch(`/api/barberias/${user.barberia_id}/stats?fecha=${hoy}`, { headers }),
+        CitaService.getByBarberia(user.barberia_id, { estado: "pendiente" }, token),
       ]);
 
       setCitas(misCitas);
@@ -90,51 +72,12 @@ export default function AdminDashboardPage() {
         setStats(await statsRes.json());
       }
     } catch (e: any) {
-      if (!isMounted.current) return;
-      // Safari/iPad lanza estos errores cuando la conexión parpadea o se aborta
-      const ignoreErrors = ['AbortError', 'Load failed', 'Failed to fetch', 'NetworkError', 'Software caused connection abort'];
-      if (ignoreErrors.some(err => e.name === err || e.message?.includes(err))) {
-        console.log("Petición omitida (Safari/iPad safe check)");
-        return;
-      }
       console.error("Error cargarDashboard:", e);
-      if (!silent) toast.error("Error de conexión al cargar el dashboard");
+      toast.error("Error de conexión al cargar el dashboard");
     } finally {
-      if (isMounted.current && abortControllerRef.current === controller) {
-        setLoading(false);
-        setRefreshing(false);
-      }
-    }
-  }, [user]);
-
-  useEffect(() => {
-    if (authLoading) return;
-    if (!user || !user.barberia_id) {
       setLoading(false);
-      return;
     }
-
-    // Sincronización en tiempo real vía Firestore
-    // Escuchamos cualquier cambio en la colección de citas de esta barbería
-    const citasRef = collection(db, "barberias", user.barberia_id, "citas");
-    const unsubscribe = onSnapshot(citasRef, (snapshot) => {
-      if (!snapshot.metadata.hasPendingWrites) {
-        if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
-        debounceTimerRef.current = setTimeout(() => {
-          if (isMounted.current) cargarDashboard(true);
-        }, 2000); // 2 segundos para iPad
-      }
-    });
-
-    return () => {
-      isMounted.current = false;
-      unsubscribe();
-      if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
-      if (abortControllerRef.current) {
-        abortControllerRef.current.abort();
-      }
-    };
-  }, [user, authLoading, cargarDashboard]);
+  };
 
   const handleConfirmarCita = async (citaId: string) => {
     toast.loading("Confirmando cita...", { id: "confirmar-cita" });
@@ -161,10 +104,10 @@ export default function AdminDashboardPage() {
     try {
       const token = await user?.getIdToken();
       await CitaService.updateEstado(
-        user!.barberia_id!,
-        citaToCancel.id,
-        "cancelada_admin",
-        { motivo_cancelacion: reason } as any,
+        user!.barberia_id!, 
+        citaToCancel.id, 
+        "cancelada_admin", 
+        { motivo: reason }, 
         token
       );
 
@@ -197,21 +140,11 @@ export default function AdminDashboardPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <div className="flex flex-col">
-            <h1 className="text-2xl font-black text-[var(--white)]">Dashboard</h1>
-            <p className="text-sm text-[var(--muted)] mt-1">
-              {formatFecha(new Date().toISOString())}
-            </p>
-          </div>
-          <button 
-            onClick={() => cargarDashboard()}
-            disabled={refreshing}
-            className={`p-2 rounded-xl bg-[var(--card)] border border-[rgba(201,168,76,0.1)] text-[var(--gold)] hover:bg-[var(--gold)]/10 transition-all ${refreshing ? 'animate-spin' : ''}`}
-            title="Refrescar datos"
-          >
-            <RefreshCw size={18} />
-          </button>
+        <div>
+          <h1 className="text-2xl font-black text-[var(--white)]">Dashboard</h1>
+          <p className="text-sm text-[var(--muted)] mt-1">
+            {formatFecha(new Date().toISOString())}
+          </p>
         </div>
         <div className="text-right">
           <p className="text-xs text-[var(--muted)]">Bienvenido</p>

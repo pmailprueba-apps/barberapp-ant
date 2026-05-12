@@ -4,9 +4,6 @@ import { getFirestore } from "firebase-admin/firestore";
 import { getStorage } from "firebase-admin/storage";
 import { getMessaging } from "firebase-admin/messaging";
 
-// Soporte emuladores locales (desarrollo local sin tocar producción)
-const USE_EMULATOR = process.env.NEXT_PUBLIC_USE_EMULATOR === "true" || process.env.FIREBASE_USE_EMULATOR === "true";
-
 let _app: ReturnType<typeof initializeApp> | null = null;
 
 export function getAdminApp() {
@@ -20,15 +17,6 @@ export function getAdminApp() {
     const clientEmail = process.env.FIREBASE_ADMIN_CLIENT_EMAIL || process.env.FIREBASE_CLIENT_EMAIL;
     const rawKey = process.env.FIREBASE_ADMIN_PRIVATE_KEY || process.env.FIREBASE_PRIVATE_KEY;
 
-    if (USE_EMULATOR) {
-      // Emulador local: proyecto fake, no necesita credenciales reales
-      _app = initializeApp({
-        projectId: process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID || "demo-local",
-      });
-      console.log("[Firebase Admin] Modo emulador activo");
-      return _app;
-    }
-
     if (!projectId || !clientEmail || !rawKey) {
       const missing = [];
       if (!projectId) missing.push("PROJECT_ID");
@@ -36,6 +24,7 @@ export function getAdminApp() {
       if (!rawKey) missing.push("PRIVATE_KEY");
       const errorMsg = `Auth: Missing Firebase Admin variables: ${missing.join(", ")}`;
       console.error(errorMsg);
+      // No lanzamos error aquí para evitar crash, pero logueamos fuerte
       return null;
     }
 
@@ -78,12 +67,6 @@ export function getAdminApp() {
 }
 
 export function getAdminAuth() {
-  if (USE_EMULATOR) {
-    const app = getAdminApp();
-    if (!app) throw new Error("Firebase Admin not configured");
-    return getAuth(app);
-  }
-
   const projectId = process.env.FIREBASE_ADMIN_PROJECT_ID || process.env.FIREBASE_PROJECT_ID || process.env.NEXT_PUBLIC_FIREBASE_PROJECT_ID;
   const clientEmail = process.env.FIREBASE_ADMIN_CLIENT_EMAIL || process.env.FIREBASE_CLIENT_EMAIL;
   const rawKey = process.env.FIREBASE_ADMIN_PRIVATE_KEY || process.env.FIREBASE_PRIVATE_KEY;

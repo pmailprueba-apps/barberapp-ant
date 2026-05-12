@@ -1,14 +1,12 @@
 "use client";
 
-import { useEffect, useState, useCallback, useRef } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { formatFecha, formatPrecio } from "@/lib/utils";
-import { Check, X, Calendar, Clock, Scissors, User, AlertTriangle, RefreshCw } from "lucide-react";
+import { Check, X, Calendar, Clock, Scissors, User, AlertTriangle } from "lucide-react";
 import { CitaService } from "@/services/citaService";
 import { toast } from "sonner";
 import { ConfirmCancelModal } from "@/components/ui/confirm-cancel-modal";
-import { db } from "@/lib/firebase";
-import { collection, onSnapshot } from "firebase/firestore";
 
 interface MisCitas {
   id: string;
@@ -25,80 +23,10 @@ export default function BarberoDashboardPage() {
   const [citas, setCitas] = useState<MisCitas[]>([]);
   const [citasPendientes, setCitasPendientes] = useState<MisCitas[]>([]);
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false);
   const [totalDia, setTotalDia] = useState(0);
   const [completadas, setCompletadas] = useState(0);
   const [confirmCancelOpen, setConfirmCancelOpen] = useState(false);
   const [citaToCancel, setCitaToCancel] = useState<MisCitas | null>(null);
-  const abortControllerRef = useRef<AbortController | null>(null);
-  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const isMountedRef = useRef(true);
-  const userBarberiaIdRef = useRef<string | undefined>(undefined);
-  const userBarberoIdRef = useRef<string | undefined>(undefined);
-
-  // Sincronizar refs de user sin causar re-renders del useEffect
-  useEffect(() => {
-    userBarberiaIdRef.current = user?.barberia_id;
-    userBarberoIdRef.current = user?.barbero_id;
-  }, [user?.barberia_id, user?.barbero_id]);
-
-  const cargarBarberoDashboard = useCallback(async (silent = false) => {
-    const barberiaId = userBarberiaIdRef.current;
-    const barberoId = userBarberoIdRef.current;
-
-    if (!barberiaId || !barberoId) {
-      setLoading(false);
-      return;
-    }
-    if (!silent) setRefreshing(true);
-
-    // Cancelar petición previa si existe
-    if (abortControllerRef.current) {
-      abortControllerRef.current.abort();
-    }
-
-    const controller = new AbortController();
-    abortControllerRef.current = controller;
-
-    try {
-      const hoy = new Date().toLocaleDateString('sv-SE');
-      const token = await user?.getIdToken();
-
-      const [misCitas, misPendientes] = await Promise.all([
-        CitaService.getByBarberia(barberiaId, { fecha: hoy, barberoId }, token, controller.signal),
-        CitaService.getByBarberia(barberiaId, { estado: "pendiente" }, token, controller.signal)
-      ]);
-
-      setCitas(misCitas);
-      const total = misCitas.reduce((sum: number, c: MisCitas) => sum + (c.precio || 0), 0);
-      setTotalDia(total);
-      setCompletadas(misCitas.filter((c: MisCitas) => c.estado === "completada").length);
-      setCitasPendientes(misPendientes);
-    } catch (e: any) {
-      // Safari/iPad lanza estos errores cuando la conexión parpadea o se aborta
-      const ignoreErrors = ['AbortError', 'Load failed', 'Failed to fetch', 'NetworkError', 'Software caused connection abort'];
-      if (ignoreErrors.some(err => e.name === err || e.message?.includes(err))) {
-        console.log("Petición omitida (Safari/iPad safe check)");
-      } else {
-        console.error("Error cargarBarberoDashboard:", e);
-      }
-    } finally {
-      // Siempre resolver loading al terminar (éxito o error ignorable)
-      if (isMountedRef.current) {
-        setLoading(false);
-        setRefreshing(false);
-      }
-    }
-  }, []); // Sin dependencias - usa refs
-
-  useEffect(() => {
-    // Timeout de seguridad: si loading nunca se resuelve en 15s, forzar salida
-    const timeout = setTimeout(() => {
-      setLoading(false);
-    }, 15000);
-
-    return () => clearTimeout(timeout);
-  }, []);
 
   useEffect(() => {
     if (authLoading) return;
@@ -109,36 +37,39 @@ export default function BarberoDashboardPage() {
     }
 
     if (user.barberia_id && user.barbero_id) {
-      // Sincronización en tiempo real vía Firestore
-      const citasRef = collection(db, "barberias", user.barberia_id, "citas");
-      let unsubscribe: () => void;
-
-      try {
-        unsubscribe = onSnapshot(citasRef, (snapshot) => {
-          if (!snapshot.metadata.hasPendingWrites) {
-            if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
-            debounceTimerRef.current = setTimeout(() => {
-              if (isMountedRef.current) cargarBarberoDashboard(true);
-            }, 2000);
-          }
-        });
-      } catch (err) {
-        console.error("Error en onSnapshot:", err);
-        setLoading(false);
-      }
-
-      return () => {
-        isMountedRef.current = false;
-        if (unsubscribe) unsubscribe();
-        if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
-        if (abortControllerRef.current) {
-          abortControllerRef.current.abort();
-        }
-      };
+      cargarBarberoDashboard();
     } else {
       setLoading(false);
     }
-  }, [user, authLoading, cargarBarberoDashboard]);
+  }, [user, authLoading]);
+
+  const cargarBarberoDashboard = async () => {
+    if (!user?.barberia_id || !user?.barbero_id) {
+      setLoading(false);
+      return;
+    }
+    
+    try {
+      const hoy = new Date().toLocaleDateString('sv-SE');
+      
+      const token = await user.getIdToken();
+      
+      const [misCitas, misPendientes] = await Promise.all([
+        CitaService.getByBarberia(user.barberia_id, { fecha: hoy, barberoId: user.barbero_id }, token),
+        CitaService.getByBarberia(user.barberia_id, { estado: "pendiente" }, token)
+      ]);
+
+      setCitas(misCitas);
+      const total = misCitas.reduce((sum: number, c: MisCitas) => sum + (c.precio || 0), 0);
+      setTotalDia(total);
+      setCompletadas(misCitas.filter((c: MisCitas) => c.estado === "completada").length);
+      setCitasPendientes(misPendientes);
+    } catch (e: any) {
+      console.error("Error cargarBarberoDashboard:", e);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleEstadoCita = async (citaId: string, nuevoEstado: string, data: any = {}) => {
     if (!user?.barberia_id) return;
@@ -216,19 +147,9 @@ export default function BarberoDashboardPage() {
   return (
     <div className="space-y-6">
       <div className="flex justify-between items-start">
-        <div className="flex items-center gap-3">
-          <div className="flex flex-col">
-            <h1 className="text-2xl font-black text-[var(--white)]">Mi Día</h1>
-            <p className="text-sm text-[var(--muted)] mt-1">{formatFecha(new Date().toISOString())}</p>
-          </div>
-          <button 
-            onClick={() => cargarBarberoDashboard()}
-            disabled={refreshing}
-            className={`p-2 rounded-xl bg-[var(--card)] border border-[rgba(201,168,76,0.1)] text-[var(--gold)] hover:bg-[var(--gold)]/10 transition-all ${refreshing ? 'animate-spin' : ''}`}
-            title="Refrescar datos"
-          >
-            <RefreshCw size={18} />
-          </button>
+        <div>
+          <h1 className="text-2xl font-black text-[var(--white)]">Mi Día</h1>
+          <p className="text-sm text-[var(--muted)] mt-1">{formatFecha(new Date().toISOString())}</p>
         </div>
         {user?.barberia_nombre && (
           <div className="bg-[var(--gold)]/10 border border-[var(--gold)]/20 px-3 py-1.5 rounded-xl flex items-center gap-2">
